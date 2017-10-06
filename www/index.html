@@ -1,0 +1,108 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: content: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+    <script src="components/loader.js"></script>
+    <link rel="stylesheet" href="components/loader.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jquery-3.2.1.min.js"></script>    
+    <script>
+     var xml_data="";
+           
+
+     $(function(){
+
+             $("#tenki1").on("click",function(){
+               $("input").on("click",function(){
+                    console.log("☆");
+                    var json_name =  $(this).attr("json");
+                    //ajax通信を行う
+                    $.ajax({
+                        url:'http://javascriptajax.azurewebsites.net/get_tenki_json.php?city=' + json_name,
+                        type:'GET',
+                        dataType:'json',
+
+                    }).done(function(data){ //ajaxの通信に成功した場合
+
+                        //受信成功時の処理をここに書く
+                        alert("受信成功");
+                        console.log(data);
+
+                        //天気の概況文
+                        $("#gaikyo").append(data.description.text);
+                        $("#gaikyo").append(data.description.publicTime);
+
+                        //連想配列の長さを得るobject.keysメソッド
+                        console.log(Object.keys(data.forecasts).length);
+                        var json_obj_length=Object.keys(data.forecasts).length;
+
+                        //3日分のデータを表示する
+                        var html="";
+                        html +='<tr>';
+                        for(var i=0;i<json_obj_length;i++){
+                            html +='<td>'+data.forecasts[i].dataLabel+'</td>';
+                        }
+                        html+='</tr>';
+                        $("#tenki").append(html);
+                        $("#tenki").append(data.description.text);
+                        $("#tenki").append(data.description.publicTime);
+
+                        //URLを表示する
+                        var html="";
+                        html +='<tr>';
+                        for(var i=0; i<json_obj_length; i++){
+                            html +='<td>'+data.forecasts[i].dataLabel+'</td>';
+                        }
+                        html+='</tr>';
+                        $("#link").append(html);
+                        
+                        xml_data = data;
+                         var xml_table="";
+                        $("#kekka1").text("");
+                        var description= $(data).find("description:eq(0)").text();
+                        $("#kekka1").text(description);
+
+                        //$(data).find("item").each(function(){
+                           // $(this).find("description").each(function(){
+    						    //$("#kekka2").append($(this).attr('url')+ "'>"  + $(this).text());
+                        for(i=2; i<10; i++){
+                            var img=$(data).find("url:eq("+i+")").text();
+                            table +="<td><img src=" +img+ ">" + $(data).find("description:eq("+i+")").text()+"</td>";
+                        }
+                        table +="</tr></table>";
+                        $("#kekka2").html(table);
+                            
+						});							
+					});
+                    });
+     });
+           
+    
+</script>
+</head>
+<body>
+    <h1>天気予報</h1>
+    <title>天気予報</title>
+        <input type="button" id="tenki1" value="香川" json="370000"/>
+        <input type="button" id="tenki2" value="松山" json="380010"/>
+        <input type="button" id="tenki3" value="徳島" json="360010"/>
+        <input type="button" id="tenki4" value="高知" json="390010"/>
+
+
+
+
+
+        <p>ここに天気予報を表示します</p>
+        <!--<div id="kekka1"> </div>-->
+    
+        <div id="gaikyo"></div>
+
+        <div id="tenki"></div>
+
+        <div id="link"></div>
+
+        <!--<div id="kekka2"> </div>-->
+</body>
+</html>
